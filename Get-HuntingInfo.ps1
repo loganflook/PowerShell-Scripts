@@ -10,7 +10,7 @@ function Get-LoggedInUser {
     $loggedInUser = Get-CimInstance -ClassName Win32_ComputerSystem | Select-Object Name, UserName, PrimaryOwnerName,
     Domain, totalphysicalmemory, Model, manufacturer
     write-host ($loggedInUser | Format-List | Out-String)
-    
+    Get-IOCs
 }
 function Get-NetworkConnection {
     $RemoteHost = Read-Host "Remote host IP (optional)"
@@ -40,9 +40,9 @@ function Get-AutomaticServices {
     Write-Host ($autoServices | Format-List | Out-String) 
 }
 function Get-ParentProcessesAndCommandLines {
-    $ProcessID = Read-Host "Specify a process ID? Enter ID or no"
-    if ($processID -ne "no") {
-        $procAndParentCMD = Get-CimInstance -ClassName Win32_Process | Select-Object CreationDate, ProcessName, ProcessID, COmmandLine, ParentProcessId | Where-Object ProcessID -eq $ProcessID
+    $ProcessIDForParent = Read-Host "Specify a process ID? Enter ID or no"
+    if ($ProcessIDForParent -ne "no") {
+        $procAndParentCMD = Get-CimInstance -ClassName Win32_Process | Select-Object CreationDate, ProcessName, ProcessID, COmmandLine, ParentProcessId | Where-Object ProcessID -eq $ProcessIDForParent
     } else {
         $procAndParentCMD = Get-CimInstance -ClassName Win32_Process | Select-Object CreationDate, ProcessName, ProcessID, COmmandLine, ParentProcessId
     }
@@ -164,8 +164,9 @@ function Get-IOCs {
         $Global:IoCsFound += $IoC
     }
 }
+
 function Get-IOCList {
-    Write-Host $Global:IoCsFound
+    Write-Host $Global:IoCsFound -BackgroundColor black -ForegroundColor Yellow
 }
 
 function Invoke-Hunt {
@@ -188,7 +189,7 @@ function Invoke-Hunt {
     16: Get TCP Connections, their processes, and command lines
     17: Get UDP Connections, their processes, and command lines
     18: Get Executable with atypical extensions (anything other than .exe and .dll)
-    00: Display Found IoCs
+    98: Display Found IoCs
     99: Exit"
 
     # grab user input
@@ -211,7 +212,7 @@ function Invoke-Hunt {
         16 {Get-TCPConnectionsAndCommandLines}
         17 {Get-UDPConnectionsAndCommandLines}
         18 {Get-UnusualExecutables}
-        00 {Get-IOCList}
+        98 {Get-IOCList}
         99 {Write-Host "Thank you"; Exit} #break out of while loop
     }
 } 
