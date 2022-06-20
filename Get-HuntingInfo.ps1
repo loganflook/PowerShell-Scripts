@@ -1,8 +1,10 @@
-# test
+$global:IoCsFound = @()
+
+
 function Get-LocalAccounts {
     $localAccs = Get-CimInstance -classname win32_account -computername localhost
     foreach($i in $localAccs) {write-host $i.Caption}
-    
+    Get-IOCs
 }
 function Get-LoggedInUser { 
     $loggedInUser = Get-CimInstance -ClassName Win32_ComputerSystem | Select-Object Name, UserName, PrimaryOwnerName,
@@ -11,33 +13,31 @@ function Get-LoggedInUser {
     
 }
 function Get-NetworkConnection {
-    $RemoteHost = Read-Host "Do you want to specify a remote host IP (you must also have a remote port)? Enter IP or no"
-    $RemotePort = Read-Host "Do you want to specify a remote port? Enter port or no"
+    $RemoteHost = Read-Host "Remote host IP (optional)"
 
-    if (($RemoteHost -ne "no") -And ($RemotePort -ne "no")){
-        $netCon = Get-NetTCPConnection -RemoteAddress $RemoteHost -RemotePort $RemotePort| Select-Object CreationTime, LocalAddress, LocalPort, RemoteAddress, RemotePort, OwningProcess, State
+    if ($RemoteHost){
+        $netCon = Get-NetTCPConnection -RemoteAddress $RemoteHost | Select-Object CreationTime, LocalAddress, LocalPort, RemoteAddress, RemotePort, OwningProcess, State
     } else {
         $netCon = Get-NetTCPConnection -State Established -AppliedSetting Internet| Select-Object CreationTime, LocalAddress, LocalPort, RemoteAddress, RemotePort, OwningProcess, State
     }
-    Write-Host ($netCon | Format-List | Out-String)
-    
+    Write-Host ($netCon | Format-List | Out-String)  
 }
 function Get-NetworkShares {
     $netShares = Get-ChildItem "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\MountPoints2\" | Select-Object PSChildName
     Write-Host $netShares
 }
 function Get-RunningProcesses{
-    $ProcessID = Read-Host "Specify a process ID? Enter ID or no"
-    if ($processID -ne "no") {
+    $ProcessID = Read-Host "Specify a process ID (optional)"
+    if ($processID) {
         $procs = Get-Process | Where-Object StartTime -ne $null | Select-Object StartTime, ProcessName, ID, Path | Where-Object Id -eq $ProcessID
     } else {
         $procs = Get-Process | Where-Object StartTime -ne $null | Select-Object StartTime, ProcessName, ID, Path
     }
-    Write-Host $procs -Separator "`r`n"
+    Write-Host ($procs | Format-List | Out-String) 
 }
 function Get-AutomaticServices {
     $autoServices = Get-Service | Select-Object Name, DisplayName, Status, StartType | Where-Object StartType -eq "Automatic"
-    Write-Host $autoServices 
+    Write-Host ($autoServices | Format-List | Out-String) 
 }
 function Get-ParentProcessesAndCommandLines {
     $ProcessID = Read-Host "Specify a process ID? Enter ID or no"
@@ -157,8 +157,16 @@ function Get-UnusualExecutables {
     Write-Host("Number of atypical executables found:")$count_suspect
 }
 
-# Wrapped the switch case in a function, moved Read-Host to Write-Host only to "read" the users input 
-# i've had situations where read-host can cause odd behaviors with large text blocks like this
+function Get-IOCs {
+    $FoundIoC = Read-Host "Record any IOC? Yes or No (Default is no)"
+    if ($FoundIoC -eq "yes") {
+        $IoC = read-host "Type the IOC and any additional information, IOCs can be displayed via Main Menu"
+        $Global:IoCsFound += $IoC
+    }
+}
+function Get-IOCList {
+    Write-Host $Global:IoCsFound
+}
 
 function Invoke-Hunt {
     Write-Host ("welcome")
@@ -180,6 +188,7 @@ function Invoke-Hunt {
     16: Get TCP Connections, their processes, and command lines
     17: Get UDP Connections, their processes, and command lines
     18: Get Executable with atypical extensions (anything other than .exe and .dll)
+    00: Display Found IoCs
     99: Exit"
 
     # grab user input
@@ -202,9 +211,11 @@ function Invoke-Hunt {
         16 {Get-TCPConnectionsAndCommandLines}
         17 {Get-UDPConnectionsAndCommandLines}
         18 {Get-UnusualExecutables}
+        00 {Get-IOCList}
         99 {Write-Host "Thank you"; Exit} #break out of while loop
     }
 } 
+
 
 while ($true) {
     Invoke-Hunt
