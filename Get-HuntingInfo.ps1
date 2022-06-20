@@ -1,4 +1,4 @@
-
+# test
 function Get-LocalAccounts {
     $localAccs = Get-CimInstance -classname win32_account -computername localhost
     # needs service not running on my machine
