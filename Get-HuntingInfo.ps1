@@ -1,7 +1,9 @@
 
 function Get-LocalAccounts {
-    Get-CimInstance -classname win32_account -computername localhost
-    Write-Host "`r`n`n`n"
+    $localAccs = Get-CimInstance -classname win32_account -computername localhost
+    # needs service not running on my machine
+    Write-Host $localAccs
+    
 }
 function Get-LoggedInUser { 
     $loggedInUser = Get-CimInstance -ClassName Win32_ComputerSystem | Select-Object Name, UserName, PrimaryOwnerName,
@@ -14,51 +16,61 @@ function Get-NetworkConnection {
     $RemotePort = Read-Host "Do you want to specify a remote port? Enter port or no"
 
     if (($RemoteHost -ne "no") -And ($RemotePort -ne "no")){
-        Get-NetTCPConnection -RemoteAddress $RemoteHost -RemotePort $RemotePort | Select-Object CreationTime, LocalAddress, LocalPort, RemoteAddress, RemotePort, OwningProcess, State
+        $netCon = Get-NetTCPConnection -RemoteAddress $RemoteHost -RemotePort $RemotePort | Select-Object CreationTime, LocalAddress, LocalPort, RemoteAddress, RemotePort, OwningProcess, State
     } else {
-        Get-NetTCPConnection | Select-Object CreationTime, LocalAddress, LocalPort, RemoteAddress, RemotePort, OwningProcess, State
+        $netCon = Get-NetTCPConnection | Select-Object CreationTime, LocalAddress, LocalPort, RemoteAddress, RemotePort, OwningProcess, State
     }
+    Write-Host $netCon
     
 }
 function Get-NetworkShares {
-    Get-ChildItem "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\MountPoints2\" | Select-Object PSChildName
+    $netShares = Get-ChildItem "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\MountPoints2\" | Select-Object PSChildName
+    Write-Host $netShares
 }
 function Get-RunningProcesses{
     $ProcessID = Read-Host "Specify a process ID? Enter ID or no"
     if ($processID -ne "no") {
-        Get-Process | Select-Object StartTime, ProcessName, ID, Path | Where-Object Id -eq $ProcessID
+        $procs = Get-Process | Select-Object StartTime, ProcessName, ID, Path | Where-Object Id -eq $ProcessID
     } else {
-        Get-Process | Select-Object StartTime, ProcessName, ID, Path
+        $procs = Get-Process | Select-Object StartTime, ProcessName, ID, Path
     }
+    Write-Host $procs
 }
 function Get-AutomaticServices {
-    Get-Service | Select-Object Name, DisplayName, Status, StartType | Where-Object StartType -eq "Automatic"
+    $autoServices = Get-Service | Select-Object Name, DisplayName, Status, StartType | Where-Object StartType -eq "Automatic"
+    Write-Host $autoServices 
 }
 function Get-ParentProcessesAndCommandLines {
     $ProcessID = Read-Host "Specify a process ID? Enter ID or no"
     if ($processID -ne "no") {
-        Get-CimInstance -ClassName Win32_Process | Select-Object CreationDate, ProcessName, ProcessID, COmmandLine, ParentProcessId | Where-Object ProcessID -eq $ProcessID
+        $procAndParentCMD = Get-CimInstance -ClassName Win32_Process | Select-Object CreationDate, ProcessName, ProcessID, COmmandLine, ParentProcessId | Where-Object ProcessID -eq $ProcessID
     } else {
-        Get-CimInstance -ClassName Win32_Process | Select-Object CreationDate, ProcessName, ProcessID, COmmandLine, ParentProcessId
+        $procAndParentCMD = Get-CimInstance -ClassName Win32_Process | Select-Object CreationDate, ProcessName, ProcessID, COmmandLine, ParentProcessId
     }
+    
+    Write-Host $procAndParentCM
 }
 function Get-ScheduledTasks {
-    Get-ScheduledTask | Select-Object TaskName, TaskPath, Date, Author, Actions, Triggers, Description, State | where Author -NotLike 'Microsoft*' | where Author -ne $null | where Author -NotLike '*@%SystemRoot%\*'
+    $schedTasks = Get-ScheduledTask | Select-Object TaskName, TaskPath, Date, Author, Actions, Triggers, Description, State | where Author -NotLike 'Microsoft*' | where Author -ne $null | where Author -NotLike '*@%SystemRoot%\*'
+    $schedTasks
 }
 function Get-HashOfFile {
     $pathtohash = Read-Host "Enter path to file"
-    Get-FileHash $pathtohash -Algorithm SHA256
+    $fileHash = Get-FileHash $pathtohash -Algorithm SHA256
+    Write-Host $fileHash
 }
 function Get-AlternativeDataStreams {
     $PathToAlternativeDataStream = Read-Host "Enter path to file"
-    Get-Item $PathToAlternativeDataStream -Stream *
+    $ADS = Get-Item $PathToAlternativeDataStream -Stream *
+    Write-Host $ADS 
     # Get-Item $PathToAlternativeDataStream * | where Stream -ne ':$DATA'
 }
 function Get-ADSStreamContent {
     $PathToADSStream = Read-Host "Enterpath to file"
     $StreamName = Read-Host "Enter Stream Name"
     if ($PathToADSStream -and $StreamName) {
-        Get-Content $PathToADSStream -Stream $StreamName
+        $streamConent = Get-Content $PathToADSStream -Stream $StreamName
+        Write-host $streamConent
     } else {
         Write-Host "Error: No file/stream relationship found"
     }
@@ -67,27 +79,32 @@ function Get-FileAnalysis {
     $filepath = Read-Host "Enter path to file"
     $answer = Read-Host "Do you want the hex format? Enter yes or no"
     if ($answer -eq "yes"){
-        get-content $filepath | Format-Hex
+        $fileContent = get-content $filepath | Format-Hex
     } else {
-        get-content $filepath
+        $fileContent = get-content $filepath
     }
+    Write-Host $fileContent
 }
 function Get-DecodedData {
     $Base64Data = Read-Host "Enter Base64 string"
-    [System.Text.Encoding]::ascii.GetString([System.Convert]::FromBase64String($Base64Data))
-    [System.Text.Encoding]::ascii.GetString([System.Convert]::FromBase64String($Base64Data)) | Format-Hex
+    $b64Decoded = [System.Text.Encoding]::ascii.GetString([System.Convert]::FromBase64String($Base64Data))
+    $b64Decodedhex = [System.Text.Encoding]::ascii.GetString([System.Convert]::FromBase64String($Base64Data)) | Format-Hex
+    
+    write-host $b64Decoded
+    Write-Host $b64Decodedhex
+
 }
 function Get-ParentProcessesAndCommandLines {
 $RunningProcesses = Get-CimInstance -classname Win32_Process | `
 Select-Object CreationDate, ProcessName, ProcessID, COmmandLine, ParentProcessId
 
 for ($i=0;$i -le $RunningProcesses.count; $i++) {
-    $RunningProcesses[$i]
+    Write-host $RunningProcesses[$i]
 
     Write-Host("Parent")
-    (Get-CimInstance -ClassName Win32_Process | Where-Object ProcessID -eq $runningprocesses[$i].ParentProcessId).ProcessName
+    Write-Host (Get-CimInstance -ClassName Win32_Process | Where-Object ProcessID -eq $runningprocesses[$i].ParentProcessId).ProcessName
     Write-Host("Parent CmdLine:")
-    (Get-CimInstance -ClassName Win32_Process | Where-Object ProcessId -eq $runningprocesses[$i].ParentProcessId).CommandLine
+    Write-Host (Get-CimInstance -ClassName Win32_Process | Where-Object ProcessId -eq $runningprocesses[$i].ParentProcessId).CommandLine
     Write-Host("Parent Process Name")
     Write-Host("-----------------------------")
     }
@@ -97,12 +114,12 @@ function Get-TCPConnectionsAndCommandLines {
         Select-Object CreationTime, LocalAddress, LocalPort, RemoteAddress, RemotePort, OwningProcess, State
 
     for($i=0;$i -le $TCPConns.count; $i++) {
-        $TCPConns[$i]
+        Write-Host $TCPConns[$i]
 
         Write-Host("Process:")
-        (Get-CimInstance -classname Win32_Process | Where-Object ProcessId -eq $TCPConns[$i].OwningProcess).ProcessName
+        Write-Host (Get-CimInstance -classname Win32_Process | Where-Object ProcessId -eq $TCPConns[$i].OwningProcess).ProcessName
         Write-Host("CmdLine:")
-        (Get-CimInstance -ClassName Win32_Process | Where-Object ProcessId -eq $TCPConns[$i].OwningProcess).CommandLine
+        Write-Host (Get-CimInstance -ClassName Win32_Process | Where-Object ProcessId -eq $TCPConns[$i].OwningProcess).CommandLine
         Write-Host("-------------------------")
     }
 }
@@ -111,12 +128,12 @@ function Get-UDPConnectionsAndCommandLines {
     Select-Object CreationTime, LocalAddress, LocalPort, RemoteAddress, RemotePort, OwningProcess, State
 
     for ($i=0;$i -le $UDPConns.count; $i++) {
-        $UDPConns[$i]
+        Write-host $UDPConns[$i]
 
         Write-Host("Process:")
-        (Get-CimInstance -ClassName Win32_Process | Where-Object ProcessId -eq $UDPConns[$i].OwningProcess).ProcessName
+        Write-Host (Get-CimInstance -ClassName Win32_Process | Where-Object ProcessId -eq $UDPConns[$i].OwningProcess).ProcessName
         Write-Host("CmdLine:")
-        (Get-CimInstance -classname Win32_Process | Where-Object ProcessId -eq $UDPConns[$i].OwningProcess).CommandLine
+        Write-Host (Get-CimInstance -classname Win32_Process | Where-Object ProcessId -eq $UDPConns[$i].OwningProcess).CommandLine
         Write-Host("------------------------")
     }
 }
@@ -141,9 +158,12 @@ function Get-UnusualExecutables {
     Write-Host("Number of atypical executables found:")$count_suspect
 }
 
+# Wrapped the switch case in a function, moved Read-Host to Write-Host only to "read" the users input 
+# i've had situations where read-host can cause odd behaviors with large text blocks like this
 
-Write-Host ("welcome")
-$SelectedAdventure = Read-Host "Choose your adventure:
+function Invoke-Hunt {
+    Write-Host ("welcome")
+    $SelectedAdventure = Write-Host "Choose your adventure:
     1: Get local account information
     2: Get Current Logged In User
     3: Get Network Activity
@@ -163,25 +183,30 @@ $SelectedAdventure = Read-Host "Choose your adventure:
     18: Get Executable with atypical extensions (anything other than .exe and .dll)
     99: Exit"
 
-Switch ($SelectedAdventure) {
-    1 {Get-LocalAccounts}
-    2 {Get-LoggedInUser}
-    3 {Get-NetworkConnection}
-    4 {Get-NetworkShares}
-    5 {Get-RunningProcesses}
-    6 {Get-AutomaticServices}
-    7 {Get-ParentProcessesAndCommandLines}
-    8 {Get-ScheduledTasks}
-    9 {Get-HashOfFile}
-    10 {Get-AlternativeDataStreams}
-    12 {Get-ADSStreamContent}
-    13 {Get-FileAnalysis}
-    14 {Get-DecodedData}
-    15 {Get-ParentProcessesAndCommandLines}
-    16 {Get-TCPConnectionsAndCommandLines}
-    17 {Get-UDPConnectionsAndCommandLines}
-    18 {Get-UnusualExecutables}
-    99 {Write-Host "Thank you"; Exit}
+    # grab user input
+    $SelectedAdventure = read-host
+    Switch ($SelectedAdventure) {
+        1 {Get-LocalAccounts}
+        2 {Get-LoggedInUser}
+        3 {Get-NetworkConnection}
+        4 {Get-NetworkShares}
+        5 {Get-RunningProcesses}
+        6 {Get-AutomaticServices}
+        7 {Get-ParentProcessesAndCommandLines}
+        8 {Get-ScheduledTasks}
+        9 {Get-HashOfFile}
+        10 {Get-AlternativeDataStreams}
+        12 {Get-ADSStreamContent}
+        13 {Get-FileAnalysis}
+        14 {Get-DecodedData}
+        15 {Get-ParentProcessesAndCommandLines}
+        16 {Get-TCPConnectionsAndCommandLines}
+        17 {Get-UDPConnectionsAndCommandLines}
+        18 {Get-UnusualExecutables}
+        99 {Write-Host "Thank you"; Exit} #break out of while loop
+    }
+} 
+
+while ($true) {
+    Invoke-Hunt
 }
-
-
