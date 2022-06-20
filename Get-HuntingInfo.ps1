@@ -1,14 +1,13 @@
 # test
 function Get-LocalAccounts {
     $localAccs = Get-CimInstance -classname win32_account -computername localhost
-    # needs service not running on my machine
-    Write-Host $localAccs
+    foreach($i in $localAccs) {write-host $i.Caption}
     
 }
 function Get-LoggedInUser { 
     $loggedInUser = Get-CimInstance -ClassName Win32_ComputerSystem | Select-Object Name, UserName, PrimaryOwnerName,
     Domain, totalphysicalmemory, Model, manufacturer
-    Write-Host $loggedInUser | Format-Table
+    write-host ($loggedInUser | Format-List | Out-String)
     
 }
 function Get-NetworkConnection {
@@ -16,11 +15,11 @@ function Get-NetworkConnection {
     $RemotePort = Read-Host "Do you want to specify a remote port? Enter port or no"
 
     if (($RemoteHost -ne "no") -And ($RemotePort -ne "no")){
-        $netCon = Get-NetTCPConnection -RemoteAddress $RemoteHost -RemotePort $RemotePort | Select-Object CreationTime, LocalAddress, LocalPort, RemoteAddress, RemotePort, OwningProcess, State
+        $netCon = Get-NetTCPConnection -RemoteAddress $RemoteHost -RemotePort $RemotePort| Select-Object CreationTime, LocalAddress, LocalPort, RemoteAddress, RemotePort, OwningProcess, State
     } else {
-        $netCon = Get-NetTCPConnection | Select-Object CreationTime, LocalAddress, LocalPort, RemoteAddress, RemotePort, OwningProcess, State
+        $netCon = Get-NetTCPConnection -State Established -AppliedSetting Internet| Select-Object CreationTime, LocalAddress, LocalPort, RemoteAddress, RemotePort, OwningProcess, State
     }
-    Write-Host $netCon
+    Write-Host ($netCon | Format-List | Out-String)
     
 }
 function Get-NetworkShares {
@@ -30,11 +29,11 @@ function Get-NetworkShares {
 function Get-RunningProcesses{
     $ProcessID = Read-Host "Specify a process ID? Enter ID or no"
     if ($processID -ne "no") {
-        $procs = Get-Process | Select-Object StartTime, ProcessName, ID, Path | Where-Object Id -eq $ProcessID
+        $procs = Get-Process | Where-Object StartTime -ne $null | Select-Object StartTime, ProcessName, ID, Path | Where-Object Id -eq $ProcessID
     } else {
-        $procs = Get-Process | Select-Object StartTime, ProcessName, ID, Path
+        $procs = Get-Process | Where-Object StartTime -ne $null | Select-Object StartTime, ProcessName, ID, Path
     }
-    Write-Host $procs
+    Write-Host $procs -Separator "`r`n"
 }
 function Get-AutomaticServices {
     $autoServices = Get-Service | Select-Object Name, DisplayName, Status, StartType | Where-Object StartType -eq "Automatic"
