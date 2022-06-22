@@ -8,15 +8,18 @@
             Each function informs the user that it is gathering the information, gathered successfull or not, displays interesting info, and shows the output path
 
     Inspiration Sources
-        
-
-            #>
+        'Hunting and Gathering with PowerShell' - Troy Wojewoda, GSEC Gold Paper - (Data parsing complete)
+        'Live Response Using PowerShell' - Sajeev Nair, GCFA Gold Paper
+        'Purple Team Field Manual' - Tim Bryant
+        'Blue Team Handbook: Incident Response' - Don Murdoch
+#>
 
 [CmdletBinding()]
 param (
     [Parameter(ValueFromPipeline=$true,Mandatory=$true)]
     [alias('dir','output')]
-    [string]$OutputDirectory
+    [string]$OutputDirectory,
+    [switch]$Full=$false
 )
 
 
@@ -45,7 +48,7 @@ Function set-directory {
     }
 } # Set-Directory
 
-
+# Below Functions will be ran with default option selected
 function Get-LocalAccounts {
     Write-host "Gathering Local Account names" -ForegroundColor Yellow
     Get-CimInstance -classname win32_account -computername localhost | Out-File "$OutputDirectory\Local_Accounts.txt"
@@ -112,8 +115,7 @@ function Get-ScheduledTasks {
     Write-Host "Scheduled tasks stored in $OutputDirectory\Non_Microsoft_Scheduled_Tasks.txt" -ForegroundColor Green
     Write-host "---------------------------------------------------------------------`r`n"  
 }
-
-function Get-AutomatedHuntingInfo {
+function Get-DefaultInfo {
     set-directory
     Get-LocalAccounts
     Get-LoggedInUser
@@ -123,6 +125,23 @@ function Get-AutomatedHuntingInfo {
     Get-AutomaticServices
     Get-CommandLines
     Get-ScheduledTasks
+}
+# Below Functions will be ran with -Full option selected, as well as default options
+function Get-PsexecEvents {
+   Get-WinEvent -FilterHashtable @{ Logname='System'; ID='7045'} | Where-Object {$_.Message.contains("PSEXEC")} | Out-File "$OutputDirectory\PsexecEvents.txt"
+  # Write-host "Debugging statement at Get-PsexecEvents" -ForegroundColor Red
+}
+
+function Get-FullInfo {
+    # Get-DefaultInfo
+    set-directory # Remove this once the Get-DefaultInfo is enabled
+    Get-PsexecEvents
+}
+function Get-AutomatedHuntingInfo {
+    switch($Full){
+        $false {Get-DefaultInfo}
+        $true {Get-FullInfo}
+    }    
 } # Get-Automated Hunting Info
 
 
