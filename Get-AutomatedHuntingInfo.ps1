@@ -100,6 +100,8 @@ function Get-AutomaticServices {
 function Get-CommandLines {
     Write-Host "Identifying Parent Processes & Command Lines" -ForegroundColor Yellow
     Get-CimInstance -ClassName Win32_Process | Where-Object CommandLine -ne $null | Select-Object CreationDate, ProcessName, ProcessID, CommandLine, ParentProcessId | Out-File "$OutputDirectory\Parent_Processes.txt"
+    $NumberofCommandLines = (Get-CimInstance -ClassName Win32_Process | Where-Object CommandLine -ne $null | Select-Object CreationDate, ProcessName, ProcessID, CommandLine, ParentProcessId | Measure-Object).Count
+    Write-Verbose "$NumberofCommandLines command lines found"
     Get-CimInstance -ClassName Win32_Process | Where-Object CommandLine -ne $null | Select-Object CreationDate, ProcessName, ProcessID, CommandLine, ParentProcessId | Export-Clixml -Path "$OutputDirectory\XML_Files\Parent_Processes.xml"
     write-host "Parent Processes stored in $OutputDirectory\Parent_Processes.txt" -ForegroundColor Green
     Write-host "---------------------------------------------------------------------`r`n"  
