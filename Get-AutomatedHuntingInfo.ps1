@@ -1,4 +1,8 @@
 <#
+    Purpose of this script:
+        The purpose of this script to to gather different pieces of information from a Windows host.
+        This could be during a security incident, or for general information gathering purposes
+
     Functions I want to add:
         User gives the remote machine they want to pull data from  <-- this will have to wait until testing in AD Domain
             Enter-PSSession

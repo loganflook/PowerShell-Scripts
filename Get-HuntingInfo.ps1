@@ -1,3 +1,10 @@
+<#
+    This script is a testing script for different information gathering functions.
+    It is written up as a 'choose your own adventure' style approach where you can select different queries to run.
+    This is not meant to be used in a production environment or for real-world applicability.
+#>
+
+
 $global:IoCsFound = @()
 
 
