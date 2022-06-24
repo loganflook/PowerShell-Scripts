@@ -8,6 +8,11 @@ function Set-CommandLineAuditing {
     reg add "hklm\software\microsoft\windows\currentversion\policies\system\audit" /v ProcessCreationIncludeCmdLine_Enabled /t REG_DWORD /d 1
 }
 
+# Find PSEXEC commands
+function Get-PSEXECCommands {
+    Get-WinEvent -FilterHashtable @{Logname='System'; ID='7045'} | Where-Object {$_.Message.contains("PSEXEC")}
+}
+
 # Disallow specific executable from executing on a host
 # You will need to change the executable name!!
 function Set-DisallowedExecutable {
