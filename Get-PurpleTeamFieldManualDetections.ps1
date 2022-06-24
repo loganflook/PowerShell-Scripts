@@ -14,3 +14,13 @@ function Set-DisallowedExecutable {
     reg add "hkcu\software\microsoft\windows\currentversion\policies\explorer" /v DisallowRun /t REG_DWORD /d "00000001"
     reg add "hkcu\software\microsoft\windows\currentversion\policies\explorer\disallowrun" /v Evil.exe /t REG_SZ /d Evil.exe /f
 }
+
+# Enforce Safe DLL Search Mode
+function Set-SafeDLLSearchMode {
+    reg add "hklm\system\CurrentControlSet\Control\Session Manager" /v SafeDllSearchMode /t REG_DWORD /d 1
+}
+
+# Restrict access to registry editor
+function Set-RegistryEditorRestriction {
+    reg add "hkcu\software\microsoft\windows\currentversion\policies\system" /v DisableRegistryTools /t REG_DWORD /d 2
+}
