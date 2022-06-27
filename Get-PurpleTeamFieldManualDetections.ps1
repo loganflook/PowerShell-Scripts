@@ -1,6 +1,9 @@
 <#
     Purpose:
         The purpose of this script is to automate the implementation of the different detection mechanisms on a Windows host outlined in the book: Purple Team Field Manual - Tim Bryant
+
+    Note:
+        This script is NOT completed
 #>
 
 # Detection remote admin tools through command line auditing
