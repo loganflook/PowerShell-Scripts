@@ -69,26 +69,19 @@ function Get-ToolVerification($toolname,$filenames) {
         }
         if (($filenames.name -contains $name) -and ($name -eq "PECmd.exe")) {
             $PECmd = $True
-        }
-        if (($filenames.name -contains $name) -and ($name -eq "RBCmd.exe")) {
+        } elseif (($filenames.name -contains $name) -and ($name -eq "RBCmd.exe")) {
             $RBCmd = $True
-        }
-        if (($filenames.name -contains $name) -and ($name -eq "RECmd.exe")) {
+        } elseif (($filenames.name -contains $name) -and ($name -eq "RECmd.exe")) {
             $RECmd = $True
-        }
-        if (($filenames.name -contains $name) -and ($name -eq "AppCompatCacheParser.exe")) {
+        } elseif (($filenames.name -contains $name) -and ($name -eq "AppCompatCacheParser.exe")) {
             $AppCompatCacheParser = $True
-        }
-        if (($filenames.name -contains $name) -and ($name -eq "AmcacheParser.exe")) {
+        } elseif (($filenames.name -contains $name) -and ($name -eq "AmcacheParser.exe")) {
             $AmCacheParser = $True
-        }
-        if (($filenames.name -contains $name) -and ($name -eq "EvtxECmd.exe")) {
+        } elseif (($filenames.name -contains $name) -and ($name -eq "EvtxECmd.exe")) {
             $EvtxECmd = $True
-        }
-        if (($filenames.name -contains $name) -and ($name -eq "lecmd.exe")) {
+        } elseif (($filenames.name -contains $name) -and ($name -eq "lecmd.exe")) {
             $lecmd = $True
-        }
-        if (($filenames.name -contains $name) -and ($name -eq "jlecmd.exe")) {
+        } elseif (($filenames.name -contains $name) -and ($name -eq "jlecmd.exe")) {
             $jlecmd = $True
         }
     }
@@ -228,7 +221,7 @@ function Get-ToolAnalysis {
     Get-ToolVerification -toolname $tools -filenames $files
     # Get-Prefetch
     # Get-RECmd
-    # Get-RBCmd
+    Get-RBCmd
     # Get-AppCompat
     # Get-AmCache
     # Get-WindowsLogs
