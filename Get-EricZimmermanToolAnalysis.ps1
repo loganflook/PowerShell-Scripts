@@ -5,10 +5,11 @@
     This script is used to run several Eric Zimmerman tools on a forensic drive mounted to the system.
     Tools included are: PECmd, RECmd, LECmd, JLECmd, RBCmd, AppCompatCacheParser, AmcacheParser, and Evtxcmd.
 
-    Mandatory parameters are the mounted evidence drive, output directory, and directory of the Eric Zimmerman tools. See examples for recommended 
+    Mandatory parameters are the mounted evidence drive, output directory, and directory of the Eric Zimmerman tools. See examples for recommended syntax
     Paths DO NOT need the final '\', I.E. "G:" and NOT "G:\"
 .NOTES
     Evidence must be mounted as the script is pointed towards a drive letter (supplied as an argument). I.E. "E:"
+    Note, I have not tested evidence as a directory structure, I.E. "E:\DriveFromClient\C"
 .LINK
     N/a
 .EXAMPLE
@@ -29,6 +30,7 @@ param (
     [string]$EZToolDirectory
 )
 
+# Creation of several variable to be used throught the script
 $files = Get-ChildItem "$EZToolDirectory\" -Recurse
 $tools = "PECmd.exe","RECmd.exe","RBCmd.exe","AppCompatCacheParser.exe","AmcacheParser.exe","EvtxECmd.exe","LECmd.exe","JLECmd.exe"
 $PECmd, $RBCmd, $RECmd, $AppCompatCacheParser, $AmCacheParser, $EvtxECmd, $lecmd, $JLECmd = $false
@@ -206,6 +208,7 @@ function Get-JLECmd {
 } # end Get-JLECmd
 
 function Get-FinalNotification($toolname,$filenames) {
+    # This is basically a repeat from the beginning of the script. However seeing the output again can be helpful after running.
     Write-Host "Script complete" -ForegroundColor Green
     foreach ($name in $toolname){
         # Write-Host $name
