@@ -31,6 +31,30 @@ param (
     [string]$EZToolDirectory
 )
 
+function Get-InputValidation {
+    if ($ClientDirectory) {
+        Write-Host "Checking to see if evidence path exists"
+        if (!(Test-Path $ClientDirectory)){
+            Write-Host "WARNING! Evidence path does not exist, exiting script!" -ForegroundColor Red -BackgroundColor Black
+            Break
+        }
+        else {
+            Write-Host "Evidence path found. Continuing script"    
+        }
+    } 
+    if ($OutputDirectory) {
+        Write-Host "Checking to see if output directory path exists"
+        if (!(Test-Path $OutputDirectory)){
+            Write-Host "WARNING! Output directory does not exist" -ForegroundColor Yellow -BackgroundColor Black
+            Write-Host "Creating directory: $OutputDirectory" -ForegroundColor DarkYellow
+            mkdir $OutputDirectory -Force
+            Write-Host "Continuing script" -ForegroundColor Yellow
+        } else{
+            Write-Host "Output directory found. Continuing script"
+        }
+    } 
+} 
+
 function Get-Prefetch{
     # This is the PECmd function. It utilizes PECmd.exe to analyze Windows Prefetch files
     $prefetchDirectory = "$clientDirectory\Windows\Prefetch"
@@ -116,14 +140,15 @@ function Get-JLECmd {
 function Get-ToolAnalysis {
     # This is the primary function call.
     # You can comment out functions (and in turn tools) that you do not want to run.
+    Get-InputValidation
     Get-Prefetch
-    Get-RECmd
-    Get-AppCompat
-    Get-AmCache
-    Get-LECmd
-    Get-WindowsLogs
-    Get-JLECmd
-    Get-RBCmd
+    # Get-RECmd
+    # Get-AppCompat
+    # Get-AmCache
+    # Get-LECmd
+    # Get-WindowsLogs
+    # Get-JLECmd
+    # Get-RBCmd
 
     Write-Host "Script complete" -ForegroundColor Green
 }
