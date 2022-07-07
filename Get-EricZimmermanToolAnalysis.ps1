@@ -168,7 +168,7 @@ function Get-WindowsLogs {
         foreach ($log in $logs){
             # This foreach-loop will loop through all identified log files in the 'log' variable and run Evtxecmd against them
             $WindowsLogs = "$clientdirectory\Windows\system32\winevt\logs\$log.evtx"
-            $EvtxecmdCommand = "C:\Tools\EZTools\EvtxECmd\EvtxECmd.exe -f $WindowsLogs --csv $outputdirectory --csvf " + $log + "Logs.csv"
+            $EvtxecmdCommand = "C:\Tools\EZTools\EvtxECmd\EvtxECmd.exe -f $WindowsLogs --csv $outputdirectory --csvf " + $log + "_Logs.csv"
             Invoke-Expression -Command $EvtxecmdCommand
         }
     } else {
