@@ -36,6 +36,8 @@ $PECmd, $RBCmd, $RECmd, $AppCompatCacheParser, $AmCacheParser, $EvtxECmd, $lecmd
 
 
 function Get-InputValidation { 
+    # The input validation function will check to make sure the evidence drive/directory exists. If it does not the script will cancel as this is a critical error.
+    # It will also check to see if the output directory exists. If it does not then it will create that directory.
     if ($ClientDirectory) {
         Write-Host "Checking to see if evidence path exists"
         if (!(Test-Path $ClientDirectory)){
@@ -60,6 +62,8 @@ function Get-InputValidation {
 } # end Get-InputValidation
 
 function Get-ToolVerification($toolname,$filenames) {
+    # The tool verification function will check to see if all the EZ tools exist. If they do it will change their corresponding variable to true, which will enable that tool's function.
+    # If a tool does not exist it will leave its corresponding variable as false effectively disabling that function.
     foreach ($name in $toolname){
         # Write-Host $name
         if ($filenames.name -contains $name){
