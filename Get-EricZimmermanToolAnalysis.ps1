@@ -85,7 +85,6 @@ function Get-ToolVerification($toolname,$filenames) {
             $jlecmd = $True
         }
     }
-    
 } # end Get-ToolVerification
 
 function Get-Prefetch{
@@ -217,16 +216,16 @@ function Get-FinalNotification($toolname,$filenames) {
 function Get-ToolAnalysis {
     # This is the primary function call.
     # You can comment out functions (and in turn tools) that you do not want to run.
-    # Get-InputValidation
+    Get-InputValidation
     Get-ToolVerification -toolname $tools -filenames $files
-    # Get-Prefetch
-    # Get-RECmd
+    Get-Prefetch
+    Get-RECmd
     Get-RBCmd
-    # Get-AppCompat
-    # Get-AmCache
-    # Get-WindowsLogs
-    # Get-LECmd
-    # Get-JLECmd
+    Get-AppCompat
+    Get-AmCache
+    Get-WindowsLogs
+    Get-LECmd
+    Get-JLECmd
 
     Get-FinalNotification -toolname $tools -filenames $files
 } # end Get-ToolAnalysis
