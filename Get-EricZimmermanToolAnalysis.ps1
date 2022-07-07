@@ -53,14 +53,14 @@ function Get-InputValidation {
             Write-Host "Output directory found. Continuing script"
         }
     } 
-} 
+} # end Get-InputValidation
 
 function Get-Prefetch{
     # This is the PECmd function. It utilizes PECmd.exe to analyze Windows Prefetch files
     $prefetchDirectory = "$clientDirectory\Windows\Prefetch"
     $pecmd = "$EZToolDirectory\PECmd.exe -d $prefetchdirectory --csv $OutputDirectory -q" 
     Invoke-Expression -Command $pecmd
-}
+} # end Get-Prefetch
 
 function Get-RECmd {
     # This is the RECmd function. It utilizes RECmd.exe to analyze registry hives
@@ -72,27 +72,27 @@ function Get-RECmd {
         $recmd = "C:\Tools\EZTools\RECmd\RECmd.exe --bn $recmdbatchfile -d $hivedirectory --csv $outputdirectory"
         Invoke-Expression -Command $recmd
     }
-}
+} # end Get-RECmd
 
 function Get-RBCmd {
     # This is the RBCmd function. It utilizes RBCmd.exe to analyze the Recycle bin
     $RecycleBinPath = "$ClientDirectory\" + '`$' + "Recycle.bin"
     $rbcmd = "C:\Tools\EZTools\RBCmd.exe -d $Recyclebinpath --csv $outputdirectory"
     Invoke-Expression -Command $rbcmd
-}
+} # end Get-RBCmd
 function Get-AppCompat {
     # This is the AppCompatCache function. It utilizes AppCompatCacheParser to analyze AppCompat data
     $AppCompatDirectory = "$clientdirectory\Windows\System32\config\SYSTEM"
     $appcompatcacheparser = "C:\Tools\EZTools\AppCompatCacheParser.exe -f $AppCompatDirectory --csv $OutputDirectory"
     Invoke-Expression -Command $appcompatcacheparser
-}
+} # end Get-AppCompat
 
 function Get-AmCache {
     # This is the AmCache function. It utilizes the AmCacheParser to analyze the Amcache hive.
     $Amcachedirectory = "$clientdirectory\Windows\AppCompat\Programs\Amcache.hve"
     $amcacheparser = "C:\Tools\EZTools\AmcacheParser.exe -i -f $amcachedirectory --csv $outputdirectory"
     Invoke-Expression -Command $amcacheparser
-}
+} # end Get-AmCache
 
 function Get-WindowsLogs {
     # This is the Evtxecmd function. This utilizes EvtxECmd.exe to parse Windows Logs
@@ -112,7 +112,7 @@ function Get-WindowsLogs {
         $Evtxecmd = "C:\Tools\EZTools\EvtxECmd\EvtxECmd.exe -f $WindowsLogs --csv $outputdirectory --csvf " + $log + "Logs.csv"
         Invoke-Expression -Command $Evtxecmd
     }
-}
+} # end Get-WindowsLogs
 
 function Get-LECmd {
     # This is the LECmd function. It utilizes LECmd.exe to analyze Link files
@@ -123,7 +123,7 @@ function Get-LECmd {
         $lecmd = "C:\Tools\EZTools\LECmd.exe -d $linkfiledirectory --csv $outputdirectory -q"
         Invoke-Expression -Command $lecmd
     }
-}
+} # end Get-LECmd
 
 function Get-JLECmd {
     # This is the JLECmd function. It utilizes JLECmd.exe to analyze jumplist files
@@ -134,7 +134,7 @@ function Get-JLECmd {
         $jlecmd = "C:\Tools\EZTools\JLECmd.exe -d $jumplistdirectory --csv $outputdirectory -q"
         Invoke-Expression -Command $jlecmd
     }
-}
+} # end Get-JLECmd
 
 
 function Get-ToolAnalysis {
@@ -151,6 +151,7 @@ function Get-ToolAnalysis {
     # Get-RBCmd
 
     Write-Host "Script complete" -ForegroundColor Green
-}
+} # end Get-ToolAnalysis
+
 # The primary funciton call
 Get-ToolAnalysis
