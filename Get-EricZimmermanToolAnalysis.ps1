@@ -30,11 +30,10 @@ param (
     [string]$EZToolDirectory
 )
 
-# Creation of several variable to be used throught the script
+# Creation of several variables to be used throughout the script
 $files = Get-ChildItem "$EZToolDirectory\" -Recurse
 $tools = "PECmd.exe","RECmd.exe","RBCmd.exe","AppCompatCacheParser.exe","AmcacheParser.exe","EvtxECmd.exe","LECmd.exe","JLECmd.exe"
 $PECmd, $RBCmd, $RECmd, $AppCompatCacheParser, $AmCacheParser, $EvtxECmd, $lecmd, $JLECmd = $false
-
 
 
 function Get-InputValidation { 
