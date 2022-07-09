@@ -24,7 +24,7 @@ param (
 # The ISC requires API requests to contain contact information (email) as they will sometimes block IPs making too many API calls.
 # Change the userId to your contact email address
 $headers = @{
-    'userId' = 'lflook@greycastlesecurity.com'
+    'userId' = 'joe@testing.com'
 }
 
 function Get-ISCInfo {
