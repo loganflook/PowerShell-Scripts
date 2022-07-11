@@ -23,15 +23,16 @@ param (
 
 # The ISC requires API requests to contain contact information (email) as they will sometimes block IPs making too many API calls.
 # Change the userId to your contact email address
-$headers = @{
-    'userId' = 'joe@testing.com'
-}
+# $headers = @{
+#     'userId' = 'Contact information is joe@testing.com'
+# }
+$UserAgentString = "Mozilla/5.0 (contact info joe@testing.com) WindowsPowerShell/3.0"
 
 function Get-ISCInfo {
     # Main calling function.
     # Here a foreach loop will take in the content of a supplied TXT file, and loop it through an API request to the ISC website - this is done via the REST API method.
     foreach ($ip in (Get-Content $IPAddresses)) {
-        $RequestString = (Invoke-RestMethod -Uri "http://isc.sans.edu/api/ip/$ip" -Headers $headers)
+        $RequestString = (Invoke-RestMethod -Uri "http://isc.sans.edu/api/ip/$ip" -UserAgent $UserAgentString)
         # Here we rename some of the object properites for easier understanding of the output we receive from the ISC API.
         $RequestString.ip | Select-Object @{N='IP Address';E={$_.Number}}, @{N='Reports';E={$_.Count}}, @{N='Targeted IPs';E={$_.attacks}}
     }
