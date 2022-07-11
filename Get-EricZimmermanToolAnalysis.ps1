@@ -10,6 +10,8 @@
 .NOTES
     Evidence must be mounted as the script is pointed towards a drive letter (supplied as an argument). I.E. "E:"
     Note, I have not tested evidence as a directory structure, I.E. "E:\DriveFromClient\C"
+
+    I want to give special shoutout to my collegue Kevin Keil as much of this script was written with the help and guidance of Kevin's expertise, and I am very grateful.
 .LINK
     N/a
 .EXAMPLE
