@@ -17,9 +17,6 @@
 .EXAMPLE
     .\Get-EricZimmermanToolAnalysis.ps1 -ClientDirectory "G:" -OutputDirectory "C:\OutputDirectory" -EZToolDirectory "C:\EZTools"
     .\Get-EricZimmermanToolAnalysis.ps1 -Source "G:" -Destination "C:\OutputDirectory" -EZDirectory "C:\EZTools"
-.TODO
-    Test Get-ToolVerification as setting an array that adds tool names, then change tool function to check that array for the presence of the tool name
-    If it exists then run, if not, then don't
 #>
 
 [CmdletBinding()]
