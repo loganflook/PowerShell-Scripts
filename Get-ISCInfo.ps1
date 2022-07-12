@@ -12,6 +12,8 @@
 .EXAMPLE
     .\Get-ISCInfo.ps1 -IPAddresses .\IPAddresses.txt
     .\Get-ISCInfo.ps1 -IPs .\IPAddresses.txt
+.TODO
+    Get Dr. Ullrich's feedback on $UserAgentString and if it works
 #>
 
 [CmdletBinding()]
