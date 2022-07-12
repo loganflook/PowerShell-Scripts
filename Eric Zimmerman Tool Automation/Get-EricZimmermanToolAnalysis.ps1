@@ -38,8 +38,7 @@ param (
 # Creation of several variables to be used throughout the script
 $files = Get-ChildItem "$EZToolDirectory\" -Recurse
 $tools = "PECmd.exe","RECmd.exe","RBCmd.exe","AppCompatCacheParser.exe","AmcacheParser.exe","EvtxECmd.exe","LECmd.exe","JLECmd.exe"
-$PECmd, $RBCmd, $RECmd, $AppCompatCacheParser, $AmCacheParser, $EvtxECmd, $lecmd, $JLECmd = $false
-
+$FoundTools = New-Object Collections.Generic.List[String]
 
 function Get-InputValidation { 
     # The input validation function will check to make sure the evidence drive/directory exists. If it does not the script will cancel as this is a critical error.
@@ -68,38 +67,22 @@ function Get-InputValidation {
 } # end Get-InputValidation
 
 function Get-ToolVerification($toolname,$filenames) {
-    # The tool verification function will check to see if all the EZ tools exist. If they do it will change their corresponding variable to true, which will enable that tool's function.
-    # If a tool does not exist it will leave its corresponding variable as false effectively disabling that function.
+    # The tool verification function will check to see if all the EZ tools exist. If they do it will add the name of the tool to a list named $FoundTools.
+    # This list will then be queried in each tool function to see if that tool exists, and if the name of the tool is in $FoundTools then the corresponding tool function will run!
     foreach ($name in $toolname){
         # Write-Host $name
         if ($filenames.name -contains $name){
             write-host "$name found, will run tool" -ForegroundColor Green
+            $FoundTools.Add($name)
         } else {
             Write-Host "$name NOT found, tool will fail" -ForegroundColor Red -BackgroundColor Black
-        }
-        if (($filenames.name -contains $name) -and ($name -eq "PECmd.exe")) {
-            $PECmd = $True
-        } elseif (($filenames.name -contains $name) -and ($name -eq "RBCmd.exe")) {
-            $RBCmd = $True
-        } elseif (($filenames.name -contains $name) -and ($name -eq "RECmd.exe")) {
-            $RECmd = $True
-        } elseif (($filenames.name -contains $name) -and ($name -eq "AppCompatCacheParser.exe")) {
-            $AppCompatCacheParser = $True
-        } elseif (($filenames.name -contains $name) -and ($name -eq "AmcacheParser.exe")) {
-            $AmCacheParser = $True
-        } elseif (($filenames.name -contains $name) -and ($name -eq "EvtxECmd.exe")) {
-            $EvtxECmd = $True
-        } elseif (($filenames.name -contains $name) -and ($name -eq "lecmd.exe")) {
-            $lecmd = $True
-        } elseif (($filenames.name -contains $name) -and ($name -eq "jlecmd.exe")) {
-            $jlecmd = $True
         }
     }
 } # end Get-ToolVerification
 
 function Get-Prefetch{
     # This is the PECmd function. It utilizes PECmd.exe to analyze Windows Prefetch files
-    if ($PECmd = $True) {
+    if ($FoundTools -contains "PECmd.exe") {
         $prefetchDirectory = "$clientDirectory\Windows\Prefetch"
         $pecmdCommand = "$EZToolDirectory\PECmd.exe -d $prefetchdirectory --csv $OutputDirectory -q" 
         Invoke-Expression -Command $pecmdCommand
@@ -110,7 +93,7 @@ function Get-Prefetch{
 
 function Get-RECmd {
     # This is the RECmd function. It utilizes RECmd.exe to analyze registry hives
-    if ($RECmd = $True) {
+    if ($FoundTools -contains "RECmd.exe") {
         $hivedirectory = "$clientdirectory\"
         # BatchFilesToRun is a set of batch files found in the 'BatchExamples' folder within RECmd. You can add additional files below
         $BatchFilesToRun = "Logan_UserActivityAuditing.reb","Logan_SystemAuditing.reb"
@@ -127,7 +110,7 @@ function Get-RECmd {
 
 function Get-RBCmd {
     # This is the RBCmd function. It utilizes RBCmd.exe to analyze the Recycle bin
-    if ($RBCmd = $True) {
+    if ($FoundTools -contains "RBCmd.exe") {
         $RecycleBinPath = "$ClientDirectory\" + '`$' + "Recycle.bin"
         $rbcmdCommand = "C:\Tools\EZTools\RBCmd.exe -d $Recyclebinpath --csv $outputdirectory"
         Invoke-Expression -Command $rbcmdCommand
@@ -137,7 +120,7 @@ function Get-RBCmd {
 } # end Get-RBCmd
 function Get-AppCompat {
     # This is the AppCompatCache function. It utilizes AppCompatCacheParser to analyze AppCompat data
-    if ($AppCompatCacheParser = $True) {
+    if ($FoundTools -contains "AppCompatCacheParser.exe") {
         $AppCompatDirectory = "$clientdirectory\Windows\System32\config\SYSTEM"
         $appcompatcacheparserCommand = "C:\Tools\EZTools\AppCompatCacheParser.exe -f $AppCompatDirectory --csv $OutputDirectory"
         Invoke-Expression -Command $appcompatcacheparserCommand
@@ -148,7 +131,7 @@ function Get-AppCompat {
 
 function Get-AmCache {
     # This is the AmCache function. It utilizes the AmCacheParser to analyze the Amcache hive.
-    if ($AmCacheParser = $True) {
+    if ($FoundTools -contains "AmCacheParser.exe") {
         $Amcachedirectory = "$clientdirectory\Windows\AppCompat\Programs\Amcache.hve"
         $amcacheparsercommand = "C:\Tools\EZTools\AmcacheParser.exe -i -f $amcachedirectory --csv $outputdirectory"
         Invoke-Expression -Command $amcacheparsercommand
@@ -169,7 +152,7 @@ function Get-WindowsLogs {
     "Microsoft-Windows-TerminalServices-LocalSessionManager%4Operational",
     "Microsoft-Windows-TaskScheduler%4Operational","Microsoft-Windows-WMI-Activity%4Operational",
     "Windows PowerShell"
-    if ($EvtxECmd = $True) {
+    if ($FoundTools -contains "EvtxECmd.exe") {
         foreach ($log in $logs){
             # This foreach-loop will loop through all identified log files in the 'log' variable and run Evtxecmd against them
             $WindowsLogs = "$clientdirectory\Windows\system32\winevt\logs\$log.evtx"
@@ -183,7 +166,7 @@ function Get-WindowsLogs {
 
 function Get-LECmd {
     # This is the LECmd function. It utilizes LECmd.exe to analyze Link files
-    if ($lecmd = $True) {
+    if ($FoundTools -contains "LECmd.exe") {
         $users = Get-ChildItem "$clientdirectory\users" 
         foreach ($user in $users){
             # This foreach-loop will loop through all identified users in the User folder and run LECmd against their link files
@@ -198,7 +181,7 @@ function Get-LECmd {
 
 function Get-JLECmd {
     # This is the JLECmd function. It utilizes JLECmd.exe to analyze jumplist files
-    if ($JLECmd = $True) {
+    if ($FoundTools -contains "JLECmd.exe") {
         $users = Get-ChildItem "$clientdirectory\users"
         foreach ($user in $users){
             # This foreach-loop will loop through all identified users in the User folder and run JLECmd against their jumplist files
