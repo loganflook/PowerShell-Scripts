@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-    Short script to put any ConsoleHost_history.txt files that are in user directories.
+    Short script to pull any ConsoleHost_history.txt files that are in user directories.
 .DESCRIPTION
     This script will check all users found in a give directory for the presence of the ConsoleHost_history.txt file in the default PSReadline path. 
     This text file holds recent PowerShell commands that a user has ran in the past, if said user did not mannually delete the file.
