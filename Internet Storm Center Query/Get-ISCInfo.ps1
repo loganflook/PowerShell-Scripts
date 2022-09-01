@@ -22,10 +22,7 @@ param (
 )
 
 # The ISC requires API requests to contain contact information (email) as they will sometimes block IPs making too many API calls.
-# Change the userId to your contact email address
-# $headers = @{
-#     'userId' = 'Contact information is joe@testing.com'
-# }
+# Change joe@testing.com to your contact email address
 $UserAgentString = "Mozilla/5.0 (contact info joe@testing.com) WindowsPowerShell/3.0"
 
 function Get-ISCInfo {
