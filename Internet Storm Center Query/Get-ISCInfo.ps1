@@ -36,7 +36,7 @@ function Get-ISCInfo {
     foreach ($ip in (Get-Content $IPAddresses)) {
         $RequestString = (Invoke-RestMethod -Uri "http://isc.sans.edu/api/ip/$ip" -UserAgent $UserAgentString)
         # Here we rename some of the object properites for easier understanding of the output we receive from the ISC API.
-        $RequestString.ip | Select-Object @{N='IP Address';E={$_.Number}}, @{N='Reports';E={$_.Count}}, @{N='Targeted IPs';E={$_.attacks}}
+        $RequestString.ip | Select-Object @{N='IP Address';E={$_.Number}}, @{N='Reports';E={$_.Count}}, @{N='Targeted IPs';E={$_.attacks}}, @{N='Country';E={$_.ascountry}}, @{N='ASN';E={$_.as}}, @{N='ASN Name';E={$_.asname}}
     }
 } # end Get-ISCInfo
 
