@@ -148,7 +148,7 @@ function Get-WindowsLogs {
     "Microsoft-Windows-TerminalServices-RemoteConnectionManager%4Operational",
     "Microsoft-Windows-TerminalServices-LocalSessionManager%4Operational",
     "Microsoft-Windows-TaskScheduler%4Operational","Microsoft-Windows-WMI-Activity%4Operational",
-    "Windows PowerShell"
+    "Microsoft-Windows-Windows Defender%4Operational","Windows PowerShell"
     if ($FoundTools -contains "EvtxECmd.exe") {
         foreach ($log in $logs){
             # This foreach-loop will loop through all identified log files in the 'log' variable and run Evtxecmd against them
