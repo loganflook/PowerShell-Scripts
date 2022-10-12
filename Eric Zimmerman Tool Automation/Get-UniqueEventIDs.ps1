@@ -13,9 +13,6 @@
 .LINK
     N/a
 .EXAMPLE
-    .\Get-EricZimmermanToolAnalysis.ps1 -ClientDirectory "G:" -OutputDirectory "C:\OutputDirectory" -EZToolDirectory "C:\EZTools"
-    .\Get-EricZimmermanToolAnalysis.ps1 -Source "G:" -Destination "C:\OutputDirectory" -EZDirectory "C:\EZTools"
-
     .\Get-UniqueEventIDs.ps1 -LogLocation "C:\Evidence"
 #>
 [CmdletBinding()]
