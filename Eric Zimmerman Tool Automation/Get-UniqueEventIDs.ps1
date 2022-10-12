@@ -6,6 +6,7 @@
     It will parse through the CSV logs and extract interesting EventIDs.
     Most of these EIDs are pulled directly off of the SANS Hunt Evil poster, as well as some from personal experience.
     This script can be expanded on to suit your direct needs.
+    LEAVE OFF THE FINAL '\' IN LOG LOCATION
 .NOTES
     This script is built specifically to run against the CSV files outputted by the main Get-EricZimmermanToolAnalysis script.
     It will not work when ran againt other data...
@@ -14,6 +15,7 @@
     N/a
 .EXAMPLE
     .\Get-UniqueEventIDs.ps1 -LogLocation "C:\Evidence"
+    LEAVE OFF THE FINAL '\' IN LOG LOCATION
 #>
 [CmdletBinding()]
 param (
